@@ -13,15 +13,19 @@ import { error } from './utils'
 import checkAttribute from './checkAttribute'
 import Table from '../classes/Table'
 
+interface AttrRef {
+  attr: string
+}
+
 interface FilterExpression {
   attr?: string
   size?: string
-  eq?: string | number | boolean | null
-  ne?: string | number | boolean | null
-  lt?: string | number
-  lte?: string | number
-  gt?: string | number
-  gte?: string | number
+  eq?: string | number | boolean | null | AttrRef
+  ne?: string | number | boolean | null | AttrRef
+  lt?: string | number | AttrRef
+  lte?: string | number | AttrRef
+  gt?: string | number | AttrRef
+  gte?: string | number | AttrRef
   between?:	string[] | number[]
   beginsWith?: string
   in?: any[]
@@ -200,6 +204,11 @@ const parseClause = (_clause: FilterExpression, grp: number, table: Table) => {
     } else if (operator === 'EXISTS') {
       if (!attr) error(`'exists' conditions require an 'attr'.`)
       clause = value ? `attribute_exists(#attr${grp})` : `attribute_not_exists(#attr${grp})`
+    } else if (value && typeof value === 'object') {
+      const ref = value as Partial<AttrRef>;
+      if (ref && (!ref.attr || typeof ref.attr !== 'string')) error(`AttrRef must have an attr field which references another attribute in the same entity.`)
+      names[`#attr${grp}_0`] = checkAttribute(ref.attr!, (entity ? table[entity].schema.attributes : table.Table.attributes))
+      clause = `#attr${grp} ${operator} #attr${grp}_0`
     } else {
       // Add value
       values[`:attr${grp}`] = value
