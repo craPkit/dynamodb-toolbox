@@ -1131,14 +1131,14 @@ The DynamoDB Toolbox provides an **Expression Builder** that allows you to gener
 | -------- | :--: | ----------- |
 | attr | `string` | Specifies the attribute to filter on. If an `entity` property is provided (or inherited from the calling operation), aliases can be used. Either `attr` or `size` must be provided. |
 | size | `string` | Specifies which attribute's calculated size to filter on (see [Operators and Functions](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Expressions.OperatorsAndFunctions.html#Expressions.OperatorsAndFunctions.Functions) for more information). If an `entity` property is provided (or inherited from the calling operation), aliases can be used. Either `attr` or `size` must be provided. |
-| eq | * | Specifies value to *equal* attribute or size of attribute. |
-| ne | * | Specifies value to *not equal* attribute or size of attribute. |
-| lt | * | Specifies value for attribute or size to be *less than*. |
-| lte | * | Specifies value for attribute or size to be *less than or equal to*. |
-| gt | * | Specifies value for attribute or size to be *greater than*. |
-| gte | * | Specifies value for attribute or size to be *greater than or equal to*. |
+| eq | *2 | Specifies value to *equal* attribute or size of attribute. |
+| ne | *2 | Specifies value to *not equal* attribute or size of attribute. |
+| lt | *2 | Specifies value for attribute or size to be *less than*. |
+| lte | *2 | Specifies value for attribute or size to be *less than or equal to*. |
+| gt | *2 | Specifies value for attribute or size to be *greater than*. |
+| gte | *2 | Specifies value for attribute or size to be *greater than or equal to*. |
 | between | `array` | Specifies values for attribute or size to be *between*. E.g. `[18,49]`. |
-| beginsWith | * | Specifies value for the attribute to *begin with* |
+| beginsWith | *1 | Specifies value for the attribute to *begin with* |
 | in | `array` | Specifies and `array` of values that the attribute or size must match one value. |
 | contains | `string` | Specifies value that must be contained within a string or Set. (see [Operators and Functions](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Expressions.OperatorsAndFunctions.html#Expressions.OperatorsAndFunctions.Functions) for more information) |
 | exists | `boolean` | Checks whether or not the attribute exists for an item. A value of `true` uses the `attribute_exists()` function and a value of `false` uses the `attribute_not_exists()` function (see [Operators and Functions](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Expressions.OperatorsAndFunctions.html#Expressions.OperatorsAndFunctions.Functions) for more information) |
@@ -1147,7 +1147,13 @@ The DynamoDB Toolbox provides an **Expression Builder** that allows you to gener
 | negate | `boolean` | Adds `NOT` to the condition. |
 | entity | `string` | The entity this attribute applies to. If supplied (or inherited from the calling operation), `attr` and `size` properties can use the entity's aliases to reference attributes. |
 
-\* Comparison values should equal the type of the attribute you are comparing against. If you are using the `size` property, the value should be a `number`.
+\*1 Comparison values should equal the type of the attribute you are comparing against. If you are using the `size` property, the value should be a `number`.  
+\*2 In addition to \*1, these also allow an object value with a key 'attr' and its value referencing another attribute of the same entity for comparing against. 
+
+Example condition containing an attribute reference:
+```javascript
+conditions: { attr: 'capacity', gt: { attr: 'reservations' } }
+```
 
 ### Complex Filters and Conditions
 
